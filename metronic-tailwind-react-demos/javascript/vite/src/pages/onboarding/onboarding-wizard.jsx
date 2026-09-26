@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, Minus } from 'lucide-react';
 import { useAuth } from '@/auth/context/auth-context';
 import { saveOnboardingRecord, setOnboardingComplete } from '@/lib/onboarding-db';
 import {
@@ -11,7 +11,6 @@ import {
   StepperIndicator,
   StepperSeparator,
   StepperTitle,
-  StepperContent,
 } from '@/components/ui/stepper';
 import { Button } from '@/components/ui/button';
 import { StepIdentity } from './steps/step-identity';
@@ -133,13 +132,17 @@ export function OnboardingWizard() {
               orientation="vertical"
               value={step + 1}
               onValueChange={handleStepClick}
-              indicators={{ completed: <Check className="size-3.5" /> }}
+              indicators={{
+                completed: <Check className="size-4" />,
+                active: <Minus className="size-4" />,
+                inactive: <Minus className="size-4" />,
+              }}
             >
               <StepperNav className="gap-0">
                 {STEPS.map((s, i) => (
                   <StepperItem key={s.key} step={i + 1} disabled={i > step}>
-                    <StepperTrigger className="rounded-lg px-2 py-1.5">
-                      <StepperIndicator className="size-9 text-sm font-semibold data-[state=completed]:size-9 data-[state=active]:size-9" />
+                    <StepperTrigger className="rounded-lg px-2 py-1.5 data-[state=active]:bg-blue-50">
+                      <StepperIndicator className="size-9 rounded-md text-sm font-semibold data-[state=inactive]:bg-accent data-[state=inactive]:text-primary/40" />
                       <div className="flex flex-col items-start gap-0.5">
                         <StepperTitle className="text-sm font-medium text-gray-900 data-[state=inactive]:text-muted-foreground">
                           {s.label}
@@ -150,7 +153,7 @@ export function OnboardingWizard() {
                       </div>
                     </StepperTrigger>
                     {i < STEPS.length - 1 && (
-                      <StepperSeparator className="my-1 ml-6 h-10 w-0.5 rounded-full bg-gray-300 data-[state=completed]:bg-primary" />
+                      <StepperSeparator className="my-1 ml-[1.625rem] h-10 w-0 border-l-2 border-dashed border-gray-300 data-[state=completed]:border-primary" />
                     )}
                   </StepperItem>
                 ))}
@@ -184,10 +187,10 @@ export function OnboardingWizard() {
             <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-5">
               <Button
                 type="button"
-                variant="secondary"
                 size="lg"
                 onClick={goPrev}
                 disabled={step === 0}
+                className="bg-blue-50 text-primary border border-blue-200 hover:bg-blue-100"
               >
                 ← Önceki
               </Button>

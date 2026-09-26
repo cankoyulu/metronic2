@@ -69,8 +69,8 @@ export function StepIdentity({ data, onChange, errors }) {
                 onClick={() => onChange('cinsiyet', c)}
                 className={`${field.optionBtn} capitalize ${
                   active
-                    ? 'border-primary bg-primary/5 text-primary'
-                    : 'border-dashed border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50'
+                    ? 'border-primary bg-blue-50 text-primary'
+                    : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50'
                 }`}
               >
                 {c}

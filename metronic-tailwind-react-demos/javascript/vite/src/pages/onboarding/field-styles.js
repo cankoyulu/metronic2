@@ -8,5 +8,5 @@ export const field = {
   error: 'mt-1 text-xs text-destructive',
   hint: 'mt-1 text-xs text-muted-foreground',
   optionBtn:
-    'flex-1 h-10 rounded-md border-2 px-4 text-center text-sm font-medium transition',
+    'flex-1 h-10 rounded-md border-2 border-dashed px-4 text-center text-sm font-medium transition',
 };
