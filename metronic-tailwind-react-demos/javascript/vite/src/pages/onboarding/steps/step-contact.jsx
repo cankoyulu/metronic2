@@ -17,7 +17,7 @@ export function StepContact({ data, onChange, errors }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-semibold text-gray-900">İletişim Bilgileriniz</h2>
+      <h3 className="text-base font-semibold text-gray-800">İletişim Bilgileriniz</h3>
 
       <div>
         <label className={field.label}>E-posta Adresi</label>

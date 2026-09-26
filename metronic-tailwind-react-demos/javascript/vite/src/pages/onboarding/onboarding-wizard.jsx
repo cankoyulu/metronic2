@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Check } from 'lucide-react';
 import { useAuth } from '@/auth/context/auth-context';
 import { saveOnboardingRecord, setOnboardingComplete } from '@/lib/onboarding-db';
+import {
+  Stepper,
+  StepperNav,
+  StepperItem,
+  StepperTrigger,
+  StepperIndicator,
+  StepperSeparator,
+  StepperTitle,
+  StepperContent,
+} from '@/components/ui/stepper';
+import { Button } from '@/components/ui/button';
 import { StepIdentity } from './steps/step-identity';
 import { StepContact } from './steps/step-contact';
 import { StepPhoto } from './steps/step-photo';
 
 const STEPS = [
-  { key: 'identity', label: 'Kimlik Bilgileriniz' },
-  { key: 'contact', label: 'İletişim Bilgileriniz' },
-  { key: 'photo', label: 'Fotoğraf Bilgileriniz' },
+  { key: 'identity', label: 'Kimlik Bilgileriniz', desc: 'T.C. kimlik ve kişisel bilgiler' },
+  { key: 'contact', label: 'İletişim Bilgileriniz', desc: 'E-posta, telefon ve adres' },
+  { key: 'photo', label: 'Fotoğraf Bilgileriniz', desc: 'Vesikalık fotoğraf yükleme' },
 ];
 
 function validate(step, data) {
@@ -73,6 +85,13 @@ export function OnboardingWizard() {
     if (step > 0) setStep(step - 1);
   };
 
+  const handleStepClick = (v) => {
+    if (v - 1 < step) {
+      setErrors({});
+      setStep(v - 1);
+    }
+  };
+
   const finish = async () => {
     const e = validate(step, data);
     setErrors(e);
@@ -100,96 +119,102 @@ export function OnboardingWizard() {
   const basvuruId = `B${String(Math.floor(100000 + Math.random() * 900000))}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-8">
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col md:flex-row overflow-hidden">
-        {/* İlerleme takibi */}
-        <aside className="w-full md:w-72 shrink-0 border-b md:border-b-0 md:border-r border-gray-200 bg-gray-50/70 p-6">
-          <h1 className="text-base font-semibold text-gray-900 mb-1">Ön Kayıt</h1>
-          <p className="text-xs text-gray-500 mb-6">Bilgileriniz güvenle saklanır.</p>
+    <div className="min-h-screen bg-gray-100 py-6 px-4 sm:py-10 sm:px-8">
+      <div className="mx-auto w-full max-w-7xl bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px]">
+          {/* Stepper — sol menü */}
+          <aside className="lg:col-span-4 xl:col-span-3 border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-50/60 p-6 lg:p-8">
+            <div className="mb-8">
+              <h1 className="text-xl font-bold text-gray-900">Ön Kayıt</h1>
+              <p className="text-sm text-gray-500 mt-1">Bilgileriniz güvenle saklanır.</p>
+            </div>
 
-          <ol className="space-y-1">
-            {STEPS.map((s, i) => {
-              const completed = i < step;
-              const active = i === step;
-              return (
-                <li key={s.key} className="flex items-start gap-3">
-                  <div className="flex flex-col items-center">
-                    <span
-                      className={`flex w-8 h-8 items-center justify-center rounded-full text-sm font-semibold ${
-                        completed
-                          ? 'bg-blue-50 text-blue-600'
-                          : active
-                            ? 'bg-blue-600 text-white'
-                            : 'border border-gray-300 bg-white text-gray-400'
-                      }`}
-                    >
-                      {completed ? (
-                        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M3.5 8.5l3 3 6-6.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      ) : active ? (
-                        <span className="block w-3 h-0.5 bg-white rounded" />
-                      ) : (
-                        <span className="block w-3 h-0.5 bg-gray-300 rounded" />
-                      )}
-                    </span>
-                    {i < STEPS.length - 1 && (
-                      <span className="w-px flex-1 my-1 border-l border-dashed border-gray-300" style={{ minHeight: 24 }} />
-                    )}
-                  </div>
-                  <span
-                    className={`pt-1.5 text-sm ${active ? 'font-semibold text-gray-900' : completed ? 'text-gray-600' : 'text-gray-400'}`}
-                  >
-                    {s.label}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </aside>
-
-        {/* Form alanı */}
-        <section className="flex-1 p-6 sm:p-8 flex flex-col">
-          <div className="flex-1">
-            {step === 0 && <StepIdentity data={data} onChange={update} errors={errors} />}
-            {step === 1 && <StepContact data={data} onChange={update} errors={errors} />}
-            {step === 2 && <StepPhoto data={data} onChange={update} errors={errors} />}
-          </div>
-
-          <p className="mt-6 text-xs text-gray-400">
-            Kullanıcı ID: {user?.id || '—'} · Başvuru ID: {basvuruId}
-          </p>
-
-          <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-5">
-            <button
-              type="button"
-              onClick={goPrev}
-              disabled={step === 0}
-              className="rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            <Stepper
+              orientation="vertical"
+              value={step + 1}
+              onValueChange={handleStepClick}
+              indicators={{ completed: <Check className="size-3.5" /> }}
             >
-              ← Önceki
-            </button>
+              <StepperNav className="gap-0">
+                {STEPS.map((s, i) => (
+                  <StepperItem key={s.key} step={i + 1} disabled={i > step}>
+                    <StepperTrigger className="rounded-lg px-2 py-1.5">
+                      <StepperIndicator className="size-9 text-sm font-semibold data-[state=completed]:size-9 data-[state=active]:size-9" />
+                      <div className="flex flex-col items-start gap-0.5">
+                        <StepperTitle className="text-sm font-medium text-gray-900 data-[state=inactive]:text-muted-foreground">
+                          {s.label}
+                        </StepperTitle>
+                        <span className={`text-xs ${i === step ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {s.desc}
+                        </span>
+                      </div>
+                    </StepperTrigger>
+                    {i < STEPS.length - 1 && (
+                      <StepperSeparator className="my-1 ml-6 h-10 w-0.5 rounded-full bg-gray-300 data-[state=completed]:bg-primary" />
+                    )}
+                  </StepperItem>
+                ))}
+              </StepperNav>
+            </Stepper>
+          </aside>
 
-            {step < STEPS.length - 1 ? (
-              <button
+          {/* Form alanı — sağ */}
+          <section className="lg:col-span-8 xl:col-span-9 p-6 sm:p-8 lg:p-10 flex flex-col">
+            {/* Adım başlığı */}
+            <div className="mb-6 pb-4 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {STEPS[step].label}
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">{STEPS[step].desc}</p>
+            </div>
+
+            {/* Form içeriği */}
+            <div className="flex-1">
+              {step === 0 && <StepIdentity data={data} onChange={update} errors={errors} />}
+              {step === 1 && <StepContact data={data} onChange={update} errors={errors} />}
+              {step === 2 && <StepPhoto data={data} onChange={update} errors={errors} />}
+            </div>
+
+            {/* Alt bilgi */}
+            <p className="mt-6 text-xs text-gray-400">
+              Kullanıcı ID: {user?.id || '—'} · Başvuru ID: {basvuruId}
+            </p>
+
+            {/* Navigasyon butonları */}
+            <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-5">
+              <Button
                 type="button"
-                onClick={goNext}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+                variant="secondary"
+                size="lg"
+                onClick={goPrev}
+                disabled={step === 0}
               >
-                Sonraki →
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={finish}
-                disabled={submitting}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
-              >
-                {submitting ? 'Kaydediliyor…' : 'Başvurumu Tamamla'}
-              </button>
-            )}
-          </div>
-        </section>
+                ← Önceki
+              </Button>
+
+              {step < STEPS.length - 1 ? (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  onClick={goNext}
+                >
+                  Sonraki →
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  onClick={finish}
+                  disabled={submitting}
+                >
+                  {submitting ? 'Kaydediliyor…' : 'Başvurumu Tamamla'}
+                </Button>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -1,19 +1,11 @@
 import { useRef, useState } from 'react';
+import { Upload } from 'lucide-react';
 import { field } from '../field-styles';
-
-function UploadIcon() {
-  return (
-    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 16V4m0 0l-4 4m4-4l4 4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function CheckIcon({ ok }) {
   return (
     <span
-      className={`inline-flex w-5 h-5 items-center justify-center rounded-full ${
+      className={`inline-flex w-5 h-5 items-center justify-center rounded-full shrink-0 ${
         ok ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
       }`}
     >
@@ -30,12 +22,7 @@ function CheckIcon({ ok }) {
   );
 }
 
-// Yüklenen vesikalık fotoğrafı tarayıcıda analiz eder:
-//  - görsel biçimi / dosya boyutu
-//  - çözünürlük eşiği
-//  - vesikalık en/boy oranı (~1.3-1.5)
-//  - beyaz arka plan (köşe parlaklığı)
-//  - biyometrik okunabilirlik (parlaklık + kontrast)
+// Yüklenen vesikalık fotoğrafı tarayıcıda analiz eder.
 async function analyzePhoto(file) {
   const checks = [];
 
@@ -72,7 +59,6 @@ async function analyzePhoto(file) {
     detail: `En/boy oranı ${ratio.toFixed(2)} ${ratio >= 1.2 && ratio <= 1.55 ? '· uygun' : '· vesikalık biçiminde değil'}`,
   });
 
-  // Küçük bir kanvasa çizip pikselleri örnekle (performans için ölçekle).
   const cw = 120;
   const ch = Math.round((cw * height) / width);
   const canvas = document.createElement('canvas');
@@ -111,7 +97,6 @@ async function analyzePhoto(file) {
     detail: `${whiteCorners}/4 köşe beyaz ${whiteCorners >= 3 ? '· uygun' : '· arka plan beyaz değil'}`,
   });
 
-  // Genel parlaklık ve kontrast (biyometrik okunabilirlik için).
   for (let i = 0; i < pixels.length; i += 4) sum += luminance(i);
   const avg = sum / (pixels.length / 4);
   let varSum = 0;
@@ -132,7 +117,7 @@ async function analyzePhoto(file) {
   return { ok: checks.every((c) => c.ok), checks };
 }
 
-export function StepPhoto({ data, onChange }) {
+export function StepPhoto({ data, onChange, errors }) {
   const inputRef = useRef(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
@@ -166,18 +151,18 @@ export function StepPhoto({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-semibold text-gray-900">Fotoğraf Bilgileriniz</h2>
-      <p className="text-sm text-red-600">
+      <h3 className="text-base font-semibold text-gray-800">Fotoğraf Bilgileriniz</h3>
+      <p className="text-sm text-destructive">
         Yükleyeceğiniz vesikalık fotoğrafın son 30 gün içerisinde çekilmiş olması gerekmektedir.
       </p>
 
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center transition hover:border-blue-500 hover:bg-blue-50/40"
+        className="w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-12 text-center transition hover:border-primary hover:bg-primary/5"
       >
-        <span className="mx-auto mb-3 flex w-12 h-12 items-center justify-center rounded-full bg-blue-600 text-white">
-          <UploadIcon />
+        <span className="mx-auto mb-3 flex w-14 h-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Upload className="w-6 h-6" />
         </span>
         <span className="block text-sm font-semibold text-gray-800">
           {analyzing ? 'Analiz ediliyor…' : 'Vesikalık fotoğrafınızı bu alana taşıyın ya da tıklayın'}
@@ -197,7 +182,7 @@ export function StepPhoto({ data, onChange }) {
           {result.checks.map((c) => (
             <li key={c.label} className="flex items-start gap-2.5 text-sm">
               <CheckIcon ok={c.ok} />
-              <span className={c.ok ? 'text-gray-700' : 'text-red-600'}>
+              <span className={c.ok ? 'text-gray-700' : 'text-destructive'}>
                 <span className="font-medium">{c.label}</span> — {c.detail}
               </span>
             </li>
@@ -206,14 +191,16 @@ export function StepPhoto({ data, onChange }) {
       )}
 
       {data.username && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm text-blue-800">Ön kayıt kullanıcı adınız:</p>
-          <p className="mt-1 text-2xl font-bold tracking-widest text-blue-700">{data.username}</p>
-          <p className="mt-1 text-xs text-blue-600">
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm text-primary">Ön kayıt kullanıcı adınız:</p>
+          <p className="mt-1 text-2xl font-bold tracking-widest text-primary">{data.username}</p>
+          <p className="mt-1 text-xs text-primary/70">
             Bu numarayı not alınız; başvuru takibinde kullanacaksınız.
           </p>
         </div>
       )}
+
+      {errors.foto && <p className={field.error}>{errors.foto}</p>}
     </div>
   );
 }
