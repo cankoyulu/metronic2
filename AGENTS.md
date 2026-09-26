@@ -36,6 +36,21 @@ in `<RequireAuth />` and redirects to `/auth/signin` when there is no session.
 `src/components/supabase/SupabaseStatus.jsx` is unused and references a non-existent
 `isAvailable()` method — left as-is.
 
+## Ön Kayıt (Pre-registration) Wizard
+
+A gate (`src/auth/require-onboarding.jsx` → `<RequireOnboarding />`) sits between
+`<RequireAuth />` and `<Demo1Layout />`: after login, if the user hasn't completed
+pre-registration they're redirected to `/onboarding` (white-theme step wizard at
+`src/pages/onboarding/onboarding-wizard.jsx`). Completing it persists a real record and
+sets the complete flag, then redirects to `/`.
+
+- 3 steps: Kimlik (T.C. 11 haneli, Ad/Soyad büyük harf, doğum, cinsiyet), İletişim
+  (e-posta, telefon `0XXX XXX XX XX`, il/ilçe — 81 il + ilçe `src/data/tr-locations.js`,
+  ilçe il'e göre dinamik), Fotoğraf (vesikalık yükleme + tarayıcıda biyometrik/arka plan
+  analizi + rastgele 6 haneli kullanıcı adı).
+- Records persist via `src/lib/onboarding-db.js` to localStorage (the app's local DB),
+  keyed by `userId`. `isOnboardingComplete(userId)` / `saveOnboardingRecord(...)`.
+
 ## Notes
 
 - These are `VITE_*` vars — they are baked into the client bundle and exposed to the

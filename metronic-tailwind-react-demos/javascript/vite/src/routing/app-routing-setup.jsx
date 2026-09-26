@@ -1,5 +1,7 @@
 import { AuthRouting } from '@/auth/auth-routing';
 import { RequireAuth } from '@/auth/require-auth';
+import { RequireOnboarding } from '@/auth/require-onboarding';
+import { OnboardingWizard } from '@/pages/onboarding/onboarding-wizard';
 import { ErrorRouting } from '@/errors/error-routing';
 import { Demo1Layout } from '@/layouts/demo1/layout';
 import {
@@ -98,8 +100,10 @@ export function AppRoutingSetup() {
   return (
     <Routes>
       <Route element={<RequireAuth />}>
-        <Route element={<Demo1Layout />}>
-          <Route path="/" element={<DefaultPage />} />
+        <Route path="/onboarding" element={<OnboardingWizard />} />
+        <Route element={<RequireOnboarding />}>
+          <Route element={<Demo1Layout />}>
+            <Route path="/" element={<DefaultPage />} />
           <Route path="/dark-sidebar" element={<Demo1DarkSidebarPage />} />
           <Route
             path="/public-profile/profiles/default/"
@@ -446,6 +450,7 @@ export function AppRoutingSetup() {
           />
 
           <Route path="/auth/get-started" element={<AccountGetStartedPage />} />
+          </Route>
         </Route>
       </Route>
       <Route path="error/*" element={<ErrorRouting />} />
