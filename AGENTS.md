@@ -15,18 +15,26 @@ docker compose -f docker-compose.base44.yml up -d --build
 - Vite 7.3.2, React 19, Node 22. `npm install --force` is required (React 19 peer-dep conflicts).
 - Source is bind-mounted at `/app`; `node_modules` lives in a named volume so deps persist.
 
-## Environment / Supabase
+## Environment / Auth
 
-`src/lib/supabase.js` calls `createClient(VITE_SUPABASE_URL, ...)` at **module load**.
-With an empty/invalid URL Supabase throws and the whole app crashes, so a valid-format
-placeholder is required just to boot — see `.env.base44-defaults`.
+The app uses Supabase **only for auth** (no Supabase database-table queries). Auth state
+is persisted in `localStorage` (`src/auth/lib/helpers.js`). The root `/` route is wrapped
+in `<RequireAuth />` and redirects to `/auth/signin` when there is no session.
 
-- The root `/` route is wrapped in `<RequireAuth />` and redirects to `/auth/signin`
-  when there is no session. Without real Supabase credentials the preview shows the
-  **sign-in page**; the dashboards and other demo pages are auth-gated.
-- To enable login, supply real values for `VITE_SUPABASE_URL`,
-  `VITE_SUPABASE_ANON_KEY`, and `VITE_SUPABASE_SERVICE_ROLE_KEY` (via the Base44
-  secrets dashboard). They override the placeholders through `/run/base44/app.env`.
+**Auth backend is selected by `VITE_AUTH_MODE`** (see `src/auth/adapters/index.js`):
+
+- `VITE_AUTH_MODE=local` (default) — uses `src/auth/adapters/local-adapter.js`, a
+  localStorage-backed user store seeded with the demo user `demo@kt.com` / `demo123`.
+  This lets the demo run with **no external services**. Log in with those credentials to
+  see the dashboards. Passwords are plaintext in localStorage (dev-only, not for prod).
+- `VITE_AUTH_MODE=supabase` — uses the real `src/auth/adapters/supabase-adapter.js`.
+  Requires real `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
+  `VITE_SUPABASE_SERVICE_ROLE_KEY` (via the Base44 secrets dashboard, overriding the
+  placeholders in `.env.base44-defaults`). `src/lib/supabase.js` calls `createClient(...)`
+  at module load, so a valid-format URL placeholder is still needed just to boot.
+
+`src/components/supabase/SupabaseStatus.jsx` is unused and references a non-existent
+`isAvailable()` method — left as-is.
 
 ## Notes
 
