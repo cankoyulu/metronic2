@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SupabaseAdapter } from '@/auth/adapters/supabase-adapter';
+import { AuthAdapter } from '@/auth/adapters';
 import { AuthContext } from '@/auth/context/auth-context';
 import * as authHelper from '@/auth/lib/helpers';
 
@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const auth = await SupabaseAdapter.login(email, password);
+      const auth = await AuthAdapter.login(email, password);
       saveAuth(auth);
       const user = await getUser();
       setCurrentUser(user || undefined);
@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
     lastName,
   ) => {
     try {
-      const auth = await SupabaseAdapter.register(
+      const auth = await AuthAdapter.register(
         email,
         password,
         password_confirmation,
@@ -73,27 +73,27 @@ export function AuthProvider({ children }) {
   };
 
   const requestPasswordReset = async (email) => {
-    await SupabaseAdapter.requestPasswordReset(email);
+    await AuthAdapter.requestPasswordReset(email);
   };
 
   const resetPassword = async (password, password_confirmation) => {
-    await SupabaseAdapter.resetPassword(password, password_confirmation);
+    await AuthAdapter.resetPassword(password, password_confirmation);
   };
 
   const resendVerificationEmail = async (email) => {
-    await SupabaseAdapter.resendVerificationEmail(email);
+    await AuthAdapter.resendVerificationEmail(email);
   };
 
   const getUser = async () => {
-    return await SupabaseAdapter.getCurrentUser();
+    return await AuthAdapter.getCurrentUser();
   };
 
   const updateProfile = async (userData) => {
-    return await SupabaseAdapter.updateUserProfile(userData);
+    return await AuthAdapter.updateUserProfile(userData);
   };
 
   const logout = () => {
-    SupabaseAdapter.logout();
+    AuthAdapter.logout();
     saveAuth(undefined);
     setCurrentUser(undefined);
   };

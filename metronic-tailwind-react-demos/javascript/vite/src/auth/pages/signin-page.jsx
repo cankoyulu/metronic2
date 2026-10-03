@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SupabaseAdapter } from '@/auth/adapters/supabase-adapter';
+import { AuthAdapter } from '@/auth/adapters';
 import { useAuth } from '@/auth/context/auth-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -135,7 +135,7 @@ export function SignInPage() {
       console.log('Initiating Google sign-in with redirect:', redirectTo);
 
       // Use our adapter to initiate the OAuth flow
-      await SupabaseAdapter.signInWithOAuth('google', { redirectTo });
+      await AuthAdapter.signInWithOAuth('google', { redirectTo });
 
       // The browser will be redirected automatically
     } catch (err) {
