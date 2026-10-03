@@ -1,10 +1,26 @@
 import { useRef, useState } from 'react';
-import { Upload, X, FileImage, Check } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@/components/ui/table';
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+const FIELD_ROW = 'flex items-baseline flex-wrap lg:flex-nowrap gap-2.5';
+const FIELD_LABEL = 'flex w-full max-w-56';
 
 export function StepPhoto({ form }) {
   const foto = form.watch('foto');
@@ -64,87 +80,108 @@ export function StepPhoto({ form }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="grid gap-5">
       {/* Fotoğraf Yükleme */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">
-          Vesikalık Fotoğraf
-        </label>
-        {preview ? (
-          <div className="flex items-center gap-4">
-            <img
-              src={preview}
-              alt="Önizleme"
-              className="w-28 h-36 object-cover rounded-lg border border-gray-200"
-            />
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600">{foto?.name}</p>
-              <p className="text-xs text-gray-400">
-                {(foto?.size / 1024).toFixed(0)} KB
-              </p>
-              <Button type="button" variant="outline" size="sm" onClick={removeFile}>
-                <X className="size-4" />
-                Sil ve Tekrar Yükle
-              </Button>
+      <div className={FIELD_ROW}>
+        <FormLabel className={FIELD_LABEL}>Vesikalık Fotoğraf</FormLabel>
+        <div className="grow">
+          {preview ? (
+            <div className="flex items-center gap-4">
+              <img
+                src={preview}
+                alt="Önizleme"
+                className="w-28 h-36 object-cover rounded-lg border border-border"
+              />
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-secondary-foreground">
+                  {foto?.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {(foto?.size / 1024).toFixed(0)} KB
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={removeFile}
+                >
+                  <X className="size-4" />
+                  Sil ve Tekrar Yükle
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
-              dragging
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-            }`}
-            onClick={() => inputRef.current?.click()}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={handleDrop}
-          >
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              className="hidden"
-              onChange={(e) => handleFile(e.target.files?.[0])}
-            />
-            <Upload className="size-10 mx-auto text-gray-400 mb-3" />
-            <p className="text-sm font-medium text-gray-700">
-              Sürükle-bırak veya tıklayarak dosya seç
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              .jpg, .jpeg, .png · Maks. 5 MB
-            </p>
-          </div>
-        )}
-        {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+          ) : (
+            <div
+              className={cn(
+                'relative rounded-lg border border-dashed p-8 text-center transition-colors cursor-pointer',
+                dragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/50',
+              )}
+              onClick={() => inputRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={handleDrop}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png"
+                className="sr-only"
+                onChange={(e) => handleFile(e.target.files?.[0])}
+              />
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className={cn(
+                    'flex h-16 w-16 items-center justify-center rounded-full',
+                    dragging ? 'bg-primary/10' : 'bg-muted',
+                  )}
+                >
+                  <Upload
+                    className={cn(
+                      'h-6',
+                      dragging ? 'text-primary' : 'text-muted-foreground',
+                    )}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">
+                    Sürükle-bırak veya tıklayarak dosya seç
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    .jpg, .jpeg, .png · Maks. 5 MB
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          {error && <p className="text-sm text-destructive mt-2">{error}</p>}
+        </div>
       </div>
 
       {/* Ön Kayıt Özeti */}
       <div>
-        <h3 className="text-base font-semibold text-gray-900 mb-3">
+        <h3 className="text-base font-semibold text-foreground mb-3">
           Ön Kayıt Özeti
         </h3>
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <tbody>
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableBody>
               {summaryRows.map((row, idx) => (
-                <tr
-                  key={idx}
-                  className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
-                >
-                  <td className="py-2.5 px-4 font-medium text-gray-600 w-1/3">
+                <TableRow key={idx} className={idx % 2 === 0 ? 'bg-muted/40' : ''}>
+                  <TableCell className="py-2.5 px-4 font-medium text-muted-foreground w-1/3">
                     {row.label}
-                  </td>
-                  <td className="py-2.5 px-4 text-gray-900">
-                    {row.value || <span className="text-gray-300">—</span>}
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="py-2.5 px-4 text-foreground">
+                    {row.value || <span className="text-muted-foreground/40">—</span>}
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
@@ -162,8 +199,8 @@ export function StepPhoto({ form }) {
             </FormControl>
             <div className="space-y-1 leading-none">
               <FormLabel className="text-sm font-normal cursor-pointer">
-                <span className="text-red-500">*</span> KVKK Aydılatma Metni ve
-                Açık Rıza Onayı'nı okudum, anladım ve onaylıyorum.
+                <span className="text-destructive">*</span> KVKK Aydınlatma Metni
+                ve Açık Rıza Onayı'nı okudum, anladım ve onaylıyorum.
               </FormLabel>
               <FormMessage />
             </div>

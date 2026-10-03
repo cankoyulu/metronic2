@@ -6,7 +6,7 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Input, InputGroup } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -28,6 +28,9 @@ const COUNTRY_CODES = [
   { code: '+966', label: '🇸🇦 S. Arabistan (+966)' },
   { code: '+86', label: '🇨🇳 Çin (+86)' },
 ];
+
+const FIELD_ROW = 'flex items-baseline flex-wrap lg:flex-nowrap gap-2.5';
+const FIELD_LABEL = 'flex w-full max-w-56';
 
 function formatPhone(value) {
   const digits = value.replace(/\D/g, '').slice(0, 10);
@@ -58,15 +61,15 @@ export function StepContact({ form }) {
   }, [ikametIl]);
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* E-posta */}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-posta Adresi</FormLabel>
+    <div className="grid gap-5">
+      {/* E-posta */}
+      <FormField
+        control={form.control}
+        name="email"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>E-posta Adresi</FormLabel>
+            <div className="grow">
               <FormControl>
                 <Input
                   {...field}
@@ -75,63 +78,68 @@ export function StepContact({ form }) {
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Telefon */}
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium">Telefon Numarası</label>
-          <div className="flex gap-2">
-            <FormField
-              control={form.control}
-              name="ulkeKodu"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[180px] shrink-0">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COUNTRY_CODES.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="telefon"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="(5XX) XXX XX XX"
-                      inputMode="tel"
-                      value={formatPhone(field.value || '')}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '');
-                        field.onChange(digits);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
+      {/* Telefon */}
+      <FormField
+        control={form.control}
+        name="telefon"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Telefon Numarası</FormLabel>
+            <div className="grow">
+              <InputGroup>
+                <FormField
+                  control={form.control}
+                  name="ulkeKodu"
+                  render={({ field: ccField }) => (
+                    <Select
+                      value={ccField.value}
+                      onValueChange={ccField.onChange}
+                    >
+                      <SelectTrigger className="w-[180px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRY_CODES.map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            {c.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="(5XX) XXX XX XX"
+                    inputMode="tel"
+                    value={formatPhone(field.value || '')}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '');
+                      field.onChange(digits);
+                    }}
+                  />
+                </FormControl>
+              </InputGroup>
+              <FormMessage />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* İkametgah İli */}
-        <FormField
-          control={form.control}
-          name="ikametIl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>İkametgah İli</FormLabel>
+      {/* İkametgah İli */}
+      <FormField
+        control={form.control}
+        name="ikametIl"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>İkametgah İli</FormLabel>
+            <div className="grow">
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -147,17 +155,19 @@ export function StepContact({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* İkametgah İlçesi */}
-        <FormField
-          control={form.control}
-          name="ikametIlce"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>İkametgah İlçesi</FormLabel>
+      {/* İkametgah İlçesi */}
+      <FormField
+        control={form.control}
+        name="ikametIlce"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>İkametgah İlçesi</FormLabel>
+            <div className="grow">
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
@@ -181,10 +191,10 @@ export function StepContact({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+            </div>
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

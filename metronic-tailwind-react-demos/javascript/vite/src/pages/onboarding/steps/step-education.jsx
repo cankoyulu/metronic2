@@ -19,6 +19,9 @@ import { TR_UNIVERSITIES } from '@/data/tr-universities';
 
 const YEARS = Array.from({ length: 50 }, (_, i) => String(2025 - i));
 
+const FIELD_ROW = 'flex items-baseline flex-wrap lg:flex-nowrap gap-2.5';
+const FIELD_LABEL = 'flex w-full max-w-56';
+
 export function StepEducation({ form }) {
   const egitimDuzeyi = form.watch('egitimDuzeyi');
   const egitimIl = form.watch('egitimIl');
@@ -44,15 +47,15 @@ export function StepEducation({ form }) {
   }, [uniSearch]);
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Eğitim Düzeyi */}
-        <FormField
-          control={form.control}
-          name="egitimDuzeyi"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Eğitim Düzeyi</FormLabel>
+    <div className="grid gap-5">
+      {/* Eğitim Düzeyi */}
+      <FormField
+        control={form.control}
+        name="egitimDuzeyi"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Eğitim Düzeyi</FormLabel>
+            <div className="grow">
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -65,17 +68,19 @@ export function StepEducation({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Giriş Yılı */}
-        <FormField
-          control={form.control}
-          name="girisYili"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Eğitim Kurumuna Giriş Yılı</FormLabel>
+      {/* Giriş Yılı */}
+      <FormField
+        control={form.control}
+        name="girisYili"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Giriş Yılı</FormLabel>
+            <div className="grow">
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -91,17 +96,21 @@ export function StepEducation({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Okuduğu İl */}
-        <FormField
-          control={form.control}
-          name="egitimIl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Okuduğu / Mezun Olduğu İl</FormLabel>
+      {/* Okuduğu İl */}
+      <FormField
+        control={form.control}
+        name="egitimIl"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>
+              Okuduğu / Mezun Olduğu İl
+            </FormLabel>
+            <div className="grow">
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -117,17 +126,21 @@ export function StepEducation({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Okuduğu İlçe */}
-        <FormField
-          control={form.control}
-          name="egitimIlce"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Okuduğu / Mezun Olduğu İlçe</FormLabel>
+      {/* Okuduğu İlçe */}
+      <FormField
+        control={form.control}
+        name="egitimIlce"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>
+              Okuduğu / Mezun Olduğu İlçe
+            </FormLabel>
+            <div className="grow">
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
@@ -151,65 +164,67 @@ export function StepEducation({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+            </div>
+          </FormItem>
+        )}
+      />
 
       {/* Eğitim Kurumu */}
       <FormField
         control={form.control}
         name="egitimKurumu"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>
               {egitimDuzeyi === 'Üniversite'
                 ? 'Üniversite'
                 : 'Eğitim Kurumu'}
             </FormLabel>
-            <FormControl>
-              {egitimDuzeyi === 'Üniversite' ? (
-                <div className="relative">
+            <div className="grow">
+              <FormControl>
+                {egitimDuzeyi === 'Üniversite' ? (
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      placeholder="Üniversite adı yazarak arayınız..."
+                      value={uniSearch || field.value || ''}
+                      onChange={(e) => {
+                        setUniSearch(e.target.value);
+                        setShowUniList(true);
+                        field.onChange(e.target.value);
+                      }}
+                      onFocus={() => setShowUniList(true)}
+                      onBlur={() => setTimeout(() => setShowUniList(false), 200)}
+                    />
+                    {showUniList && filteredUnis.length > 0 && (
+                      <div className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-md border border-border bg-popover shadow-lg">
+                        {filteredUnis.map((u) => (
+                          <button
+                            key={u}
+                            type="button"
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-accent text-popover-foreground"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              field.onChange(u);
+                              setUniSearch(u);
+                              setShowUniList(false);
+                            }}
+                          >
+                            {u}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <Input
                     {...field}
-                    placeholder="Üniversite adı yazarak arayınız..."
-                    value={uniSearch || field.value || ''}
-                    onChange={(e) => {
-                      setUniSearch(e.target.value);
-                      setShowUniList(true);
-                      field.onChange(e.target.value);
-                    }}
-                    onFocus={() => setShowUniList(true)}
-                    onBlur={() => setTimeout(() => setShowUniList(false), 200)}
+                    placeholder="Okul / kurum adı giriniz"
                   />
-                  {showUniList && filteredUnis.length > 0 && (
-                    <div className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
-                      {filteredUnis.map((u) => (
-                        <button
-                          key={u}
-                          type="button"
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            field.onChange(u);
-                            setUniSearch(u);
-                            setShowUniList(false);
-                          }}
-                        >
-                          {u}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Input
-                  {...field}
-                  placeholder="Okul / kurum adı giriniz"
-                />
-              )}
-            </FormControl>
-            <FormMessage />
+                )}
+              </FormControl>
+              <FormMessage />
+            </div>
           </FormItem>
         )}
       />

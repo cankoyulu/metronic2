@@ -17,17 +17,20 @@ import {
 } from '@/components/ui/select';
 import { TR_CITIES } from '@/data/tr-cities';
 
+const FIELD_ROW = 'flex items-baseline flex-wrap lg:flex-nowrap gap-2.5';
+const FIELD_LABEL = 'flex w-full max-w-56';
+
 export function StepPersonal({ form }) {
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* T.C. Kimlik No */}
-        <FormField
-          control={form.control}
-          name="tcKimlik"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>T.C. Kimlik Numarası</FormLabel>
+    <div className="grid gap-5">
+      {/* T.C. Kimlik No */}
+      <FormField
+        control={form.control}
+        name="tcKimlik"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>T.C. Kimlik Numarası</FormLabel>
+            <div className="grow">
               <FormControl>
                 <Input
                   {...field}
@@ -41,47 +44,53 @@ export function StepPersonal({ form }) {
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Ad */}
-        <FormField
-          control={form.control}
-          name="ad"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ad</FormLabel>
+      {/* Ad */}
+      <FormField
+        control={form.control}
+        name="ad"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Ad</FormLabel>
+            <div className="grow">
               <FormControl>
                 <Input {...field} placeholder="Adınız" />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Soyad */}
-        <FormField
-          control={form.control}
-          name="soyad"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Soyad</FormLabel>
+      {/* Soyad */}
+      <FormField
+        control={form.control}
+        name="soyad"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Soyad</FormLabel>
+            <div className="grow">
               <FormControl>
                 <Input {...field} placeholder="Soyadınız" />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Cinsiyet */}
-        <FormField
-          control={form.control}
-          name="cinsiyet"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cinsiyet</FormLabel>
+      {/* Cinsiyet */}
+      <FormField
+        control={form.control}
+        name="cinsiyet"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Cinsiyet</FormLabel>
+            <div className="grow">
               <FormControl>
                 <RadioGroup
                   value={field.value}
@@ -97,32 +106,36 @@ export function StepPersonal({ form }) {
                 </RadioGroup>
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Doğum Tarihi */}
-        <FormField
-          control={form.control}
-          name="dogumTarihi"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Doğum Tarihi</FormLabel>
+      {/* Doğum Tarihi */}
+      <FormField
+        control={form.control}
+        name="dogumTarihi"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Doğum Tarihi</FormLabel>
+            <div className="grow">
               <FormControl>
                 <Input {...field} type="date" />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+            </div>
+          </FormItem>
+        )}
+      />
 
-        {/* Doğum Yeri */}
-        <FormField
-          control={form.control}
-          name="dogumYeri"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Doğum Yeri</FormLabel>
+      {/* Doğum Yeri */}
+      <FormField
+        control={form.control}
+        name="dogumYeri"
+        render={({ field }) => (
+          <FormItem className={FIELD_ROW}>
+            <FormLabel className={FIELD_LABEL}>Doğum Yeri</FormLabel>
+            <div className="grow">
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
@@ -138,10 +151,10 @@ export function StepPersonal({ form }) {
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+            </div>
+          </FormItem>
+        )}
+      />
     </div>
   );
 }
