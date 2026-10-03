@@ -103,7 +103,7 @@ export function OnboardingWizard() {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <Container className="max-w-3xl">
+      <Container className="max-w-5xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground">
             Ön Kayıt ve Başvuru Formu
@@ -114,93 +114,101 @@ export function OnboardingWizard() {
         </div>
 
         <Form {...form}>
-          <Stepper value={currentStep} onValueChange={setCurrentStep}>
+          <Stepper value={currentStep} onValueChange={setCurrentStep} orientation="vertical">
             <Card>
-              <CardHeader>
-                <CardTitle>{STEPS[currentStep - 1].title}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <StepperNav className="mb-8">
-                  {STEPS.map((step, idx) => (
-                    <StepperItem
-                      key={idx}
-                      value={idx + 1}
-                      className="flex-1"
+              <div className="flex flex-col lg:flex-row">
+                {/* Vertical Stepper Sidebar */}
+                <div className="lg:w-64 shrink-0 border-b lg:border-b-0 lg:border-r border-border p-6">
+                  <StepperNav>
+                    {STEPS.map((step, idx) => (
+                      <StepperItem
+                        key={idx}
+                        step={idx + 1}
+                        disabled={idx + 1 > currentStep}
+                      >
+                        <StepperTrigger asChild>
+                          <button
+                            type="button"
+                            className="flex items-start gap-3 text-left w-full"
+                            disabled={idx + 1 > currentStep}
+                          >
+                            <StepperIndicator>
+                              {idx + 1 < currentStep ? (
+                                <Check className="size-4" />
+                              ) : (
+                                idx + 1
+                              )}
+                            </StepperIndicator>
+                            <div>
+                              <StepperTitle>{step.title}</StepperTitle>
+                              <StepperDescription>
+                                {step.description}
+                              </StepperDescription>
+                            </div>
+                          </button>
+                        </StepperTrigger>
+                        {idx < STEPS.length - 1 && <StepperSeparator />}
+                      </StepperItem>
+                    ))}
+                  </StepperNav>
+                </div>
+
+                {/* Form Content */}
+                <div className="flex-1 flex flex-col">
+                  <CardHeader>
+                    <CardTitle>{STEPS[currentStep - 1].title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 flex-1">
+                    <form onSubmit={form.handleSubmit(handleSubmit)}>
+                      <StepperContent value={1}>
+                        <StepPersonal form={form} />
+                      </StepperContent>
+                      <StepperContent value={2}>
+                        <StepContact form={form} />
+                      </StepperContent>
+                      <StepperContent value={3}>
+                        <StepEducation form={form} />
+                      </StepperContent>
+                      <StepperContent value={4}>
+                        <StepPhoto form={form} />
+                      </StepperContent>
+                    </form>
+                  </CardContent>
+                  <CardFooter className="flex items-center justify-between">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handlePrev}
+                      disabled={currentStep === 1}
                     >
-                      <StepperTrigger asChild>
-                        <button
-                          type="button"
-                          className="flex items-start gap-3 text-left"
-                          disabled={idx + 1 > currentStep}
-                        >
-                          <StepperIndicator>
-                            {idx + 1 < currentStep ? (
-                              <Check className="size-4" />
-                            ) : (
-                              idx + 1
-                            )}
-                          </StepperIndicator>
-                          <div className="hidden sm:block">
-                            <StepperTitle>{step.title}</StepperTitle>
-                            <StepperDescription>
-                              {step.description}
-                            </StepperDescription>
-                          </div>
-                        </button>
-                      </StepperTrigger>
-                      {idx < STEPS.length - 1 && <StepperSeparator />}
-                    </StepperItem>
-                  ))}
-                </StepperNav>
+                      <ChevronLeft className="size-4" />
+                      Geri
+                    </Button>
 
-                <form onSubmit={form.handleSubmit(handleSubmit)}>
-                  <StepperContent value={1}>
-                    <StepPersonal form={form} />
-                  </StepperContent>
-                  <StepperContent value={2}>
-                    <StepContact form={form} />
-                  </StepperContent>
-                  <StepperContent value={3}>
-                    <StepEducation form={form} />
-                  </StepperContent>
-                  <StepperContent value={4}>
-                    <StepPhoto form={form} />
-                  </StepperContent>
-                </form>
-              </CardContent>
-              <CardFooter className="flex items-center justify-between">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrev}
-                  disabled={currentStep === 1}
-                >
-                  <ChevronLeft className="size-4" />
-                  Geri
-                </Button>
-
-                {currentStep < 4 ? (
-                  <Button type="button" onClick={handleNext}>
-                    İleri
-                    <ChevronRight className="size-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={submitting}
-                    onClick={form.handleSubmit(handleSubmit)}
-                  >
-                    {submitting ? (
-                      <Fragment>
-                        <Loader2 className="size-4 animate-spin" />
-                        Gönderiliyor...
-                      </Fragment>
+                    {currentStep < 4 ? (
+                      <Button type="button" onClick={handleNext}>
+                        İleri
+                        <ChevronRight className="size-4" />
+                      </Button>
                     ) : (
-                      'Başvuruyu Gönder'
+                      <Button
+                        type="submit"
+                        disabled={submitting}
+                        onClick={form.handleSubmit(handleSubmit)}
+                      >
+                        {submitting ? (
+                          <Fragment>
+                            <Loader2 className="size-4 animate-spin" />
+                            Gönderiliyor...
+                          </Fragment>
+                        ) : (
+                          'Başvuruyu Gönder'
+                        )}
+                      </Button>
                     )}
-                  </Button>
-                )}
-              </CardFooter>
+                  </CardFooter>
+                </div>
+              </div>
             </Card>
           </Stepper>
         </Form>
