@@ -1,6 +1,7 @@
 import { AuthRouting } from '@/auth/auth-routing';
 import { RequireAuth } from '@/auth/require-auth';
 import { ErrorRouting } from '@/errors/error-routing';
+import { OnboardingPage } from '@/pages/onboarding/page';
 import { Demo1Layout } from '@/layouts/demo1/layout';
 import {
   AccountActivityPage,
@@ -449,6 +450,7 @@ export function AppRoutingSetup() {
         </Route>
       </Route>
       <Route path="error/*" element={<ErrorRouting />} />
+      <Route path="onboarding" element={<OnboardingPage />} />
       <Route path="auth/*" element={<AuthRouting />} />
       <Route path="*" element={<Navigate to="/error/404" />} />
     </Routes>
